@@ -16,4 +16,7 @@ router.get('/kecamatan/:cityId', apiController.getKecamatanById);
 // Router GET costs
 router.post('/ongkos', apiController.getCost)
 
+// Router GET Track
+router.get('/track/:courier/:resi', apiController.getCurrentPosition);
+
 module.exports = router

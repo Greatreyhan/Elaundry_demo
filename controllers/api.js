@@ -41,9 +41,21 @@ const getCost = (req, res) => {
       .catch(err => res.send(err))
   }
 
+const getCurrentPosition = (req,res) =>{
+    const courier = req.params.courier
+    const resi = req.params.resi
+    axios.post('/waybill',{
+      waybill : resi,
+      courier : courier 
+    })
+    .then(response => res.json(response.data))
+    .catch(err => res.send(err))
+}
+
 module.exports={
     getProvinsi,
     getKotaById,
     getKecamatanById,
-    getCost
+    getCost,
+    getCurrentPosition
 }
