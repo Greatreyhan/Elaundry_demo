@@ -14,6 +14,6 @@ router.get('/kota/:provId', apiController.getKotaById);
 router.get('/kecamatan/:cityId', apiController.getKecamatanById);
 
 // Router GET costs
-router.get('/ongkos/:asal/:tujuan/:berat/:kurir', apiController.getCost)
+router.post('/ongkos', apiController.getCost)
 
 module.exports = router
