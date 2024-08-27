@@ -28,6 +28,7 @@ const getKecamatanById = (req,res) => {
   }
 
 const getCost = (req, res) => {
+    console.log(req.body)
     const {origin, originType, destination, destinationType, weight, courier} = req.body;
     axios.post('/cost', {
         origin: origin,

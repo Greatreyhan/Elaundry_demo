@@ -13,7 +13,7 @@ router.get('/kota/:provId', apiController.getKotaById);
 // Router GET kecamatan by city_id
 router.get('/kecamatan/:cityId', apiController.getKecamatanById);
 
-// Router GET costs
+// Router POST costs
 router.post('/ongkos', apiController.getCost)
 
 // Router GET Track
