@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs');
 
 // Path to scan.json and database.json
-const scanFileRFID = path.join(__dirname, '/tmp/scan.json');
-const scanFileDatabase = path.join(__dirname, '/tmp/database.json');
+const {scanFileRFID} = require('../tmp/scan.js');
+const {scanFileDatabase} = require( '../tmp/database.js');
 
 // Load data from scan.json (RFID data from scanning)
 function loadScanData() {

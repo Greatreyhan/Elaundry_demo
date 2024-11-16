@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Path to database.json
-const scanFileDatabase = path.join(__dirname, '/tmp/database.json');
+const {scanFileDatabase} = require( '../tmp/database.js');
 
 // Load data from database.json
 function loadReceivedDatabase() {
