@@ -39,12 +39,78 @@ let receivedDatabase = loadReceivedDatabase();
 
 // Handlers
 const postScanData = (req, res) => {
-    const incomingData = req.body;
-    console.log('Received Scan Data:', incomingData);
-    receivedRFID.push(incomingData);
+    const { rfid } = req.body;
+
+    if (!rfid) {
+        return res.status(400).send({ 
+            message: 'RFID is required.' 
+        });
+    }
+
+    // Check if the RFID already exists in receivedRFID to prevent duplicates
+    const existingData = receivedRFID.find(item => item.rfid === rfid);
+
+    if (existingData) {
+        return res.status(400).send({
+            message: `RFID ${rfid} already exists in the scan data. No duplicates allowed.`,
+        });
+    }
+
+    // If no duplicate, add new entry with only the RFID
+    console.log('Received Scan Data:', { rfid });
+    receivedRFID.push({ rfid });
     saveReceivedRFID(receivedRFID);
-    res.status(200).send({ message: 'Scan data received successfully!' });
+
+    res.status(200).send({ 
+        message: 'Scan data received successfully!',
+        data: { rfid },
+    });
 };
+
+const postMultipleScanData = (req, res) => {
+    const { rfids } = req.body;
+
+    if (!Array.isArray(rfids)) {
+        return res.status(400).send({ 
+            message: 'The body must contain an array of RFID values.' 
+        });
+    }
+
+    if (rfids.length === 0) {
+        return res.status(400).send({ 
+            message: 'No RFID data provided.' 
+        });
+    }
+
+    const addedRFIDs = [];
+    const alreadyExistsRFIDs = [];
+
+    rfids.forEach(rfid => {
+        if (!rfid) return;
+
+        // Check if the RFID already exists
+        const existingData = receivedRFID.find(item => item.rfid === rfid);
+
+        if (existingData) {
+            alreadyExistsRFIDs.push(rfid);
+        } else {
+            // If no duplicate, add new RFID
+            receivedRFID.push({ rfid });
+            addedRFIDs.push(rfid);
+        }
+    });
+
+    // Save the updated data to scan.json
+    saveReceivedRFID(receivedRFID);
+
+    // Response
+    res.status(200).send({
+        message: 'Scan data processed successfully!',
+        added: addedRFIDs,
+        alreadyExists: alreadyExistsRFIDs,
+    });
+};
+
 
 const getScanData = (req, res) => {
     console.log('Sending Scan Data:', receivedRFID);
@@ -83,4 +149,4 @@ const getFullScanData = (req, res) => {
     res.status(200).json({ found, notFound });
 };
 
-module.exports = { postScanData, getScanData, deleteScanData, getFullScanData };
+module.exports = { postScanData, getScanData, deleteScanData, getFullScanData, postMultipleScanData };
