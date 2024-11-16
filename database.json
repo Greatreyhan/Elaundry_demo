@@ -1,0 +1,16 @@
+[
+  {
+    "rfid": "12345",
+    "name": "John Doe",
+    "room": "Room A",
+    "process": "Scanning",
+    "timestamp": "2024-11-16T14:47:36.572Z"
+  },
+  {
+    "rfid": "12347",
+    "name": "John Doe",
+    "room": "Room A",
+    "process": "Scanning",
+    "timestamp": "2024-11-16T14:48:27.762Z"
+  }
+]
