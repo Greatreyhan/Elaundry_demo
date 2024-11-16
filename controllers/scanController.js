@@ -1,41 +1,5 @@
-const path = require('path');
-const fs = require('fs');
-
-// Path to scan.json and database.json
-const {scanFileRFID} = require('../tmp/scan.js');
-const {scanFileDatabase} = require( '../tmp/database.js');
-
-// Load data from scan.json (RFID data from scanning)
-function loadScanData() {
-    if (fs.existsSync(scanFileRFID)) {
-        const rawData = fs.readFileSync(scanFileRFID);
-        return JSON.parse(rawData);
-    }
-    return [];
-}
-
-// Load data from database.json (Stored database entries)
-function loadReceivedDatabase() {
-    if (fs.existsSync(scanFileDatabase)) {
-        const rawData = fs.readFileSync(scanFileDatabase);
-        return JSON.parse(rawData);
-    }
-    return [];
-}
-
-// Save data to scan.json
-function saveReceivedRFID(data) {
-    fs.writeFileSync(scanFileRFID, JSON.stringify(data, null, 2));
-}
-
-// Save data to database.json
-function saveReceivedDatabase(data) {
-    fs.writeFileSync(scanFileDatabase, JSON.stringify(data, null, 2));
-}
-
-// Load initial data from scan.json and database.json
-let receivedRFID = loadScanData();
-let receivedDatabase = loadReceivedDatabase();
+const { scanFileRFID } = require('../tmp/scan.js');
+const { scanFileDatabase } = require('../tmp/database.js');
 
 // Handlers
 const postScanData = (req, res) => {
@@ -47,8 +11,8 @@ const postScanData = (req, res) => {
         });
     }
 
-    // Check if the RFID already exists in receivedRFID to prevent duplicates
-    const existingData = receivedRFID.find(item => item.rfid === rfid);
+    // Check if the RFID already exists in scanFileRFID to prevent duplicates
+    const existingData = scanFileRFID.find(item => item.rfid === rfid);
 
     if (existingData) {
         return res.status(400).send({
@@ -58,8 +22,7 @@ const postScanData = (req, res) => {
 
     // If no duplicate, add new entry with only the RFID
     console.log('Received Scan Data:', { rfid });
-    receivedRFID.push({ rfid });
-    saveReceivedRFID(receivedRFID);
+    scanFileRFID.push({ rfid });
 
     res.status(200).send({ 
         message: 'Scan data received successfully!',
@@ -89,19 +52,16 @@ const postMultipleScanData = (req, res) => {
         if (!rfid) return;
 
         // Check if the RFID already exists
-        const existingData = receivedRFID.find(item => item.rfid === rfid);
+        const existingData = scanFileRFID.find(item => item.rfid === rfid);
 
         if (existingData) {
             alreadyExistsRFIDs.push(rfid);
         } else {
             // If no duplicate, add new RFID
-            receivedRFID.push({ rfid });
+            scanFileRFID.push({ rfid });
             addedRFIDs.push(rfid);
         }
     });
-
-    // Save the updated data to scan.json
-    saveReceivedRFID(receivedRFID);
 
     // Response
     res.status(200).send({
@@ -111,30 +71,24 @@ const postMultipleScanData = (req, res) => {
     });
 };
 
-
 const getScanData = (req, res) => {
-    console.log('Sending Scan Data:', receivedRFID);
-    res.status(200).json(receivedRFID);
+    console.log('Sending Scan Data:', scanFileRFID);
+    res.status(200).json(scanFileRFID);
 };
 
 const deleteScanData = (req, res) => {
-    receivedRFID = [];
-    saveReceivedRFID(receivedRFID);
+    scanFileRFID.length = 0; // Clear the in-memory array
     console.log('All Scan Data Deleted.');
     res.status(200).send({ message: 'All scan data deleted successfully.' });
 };
 
-// New function to get full scan data from scan.json and match it with database.json
 const getFullScanData = (req, res) => {
-    const scanData = loadScanData(); // Load scan data from scan.json
-    const databaseData = loadReceivedDatabase(); // Load database entries from database.json
-
     const found = [];
     const notFound = [];
 
-    // Loop through each RFID in scan.json to check against database.json
-    scanData.forEach(scanItem => {
-        const matchingItem = databaseData.find(entry => entry.rfid === scanItem.rfid);
+    // Loop through each RFID in scanFileRFID to check against scanFileDatabase
+    scanFileRFID.forEach(scanItem => {
+        const matchingItem = scanFileDatabase.find(entry => entry.rfid === scanItem.rfid);
         
         if (matchingItem) {
             // If found, push to found array

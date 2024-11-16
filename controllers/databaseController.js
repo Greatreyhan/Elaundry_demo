@@ -1,21 +1,14 @@
-const path = require('path');
-const fs = require('fs');
+const { scanFileDatabase } = require('../tmp/database.js');
 
-// Path to database.json
-const {scanFileDatabase} = require( '../tmp/database.js');
-
-// Load data from database.json
+// Load data from the in-memory database
 function loadReceivedDatabase() {
-    if (fs.existsSync(scanFileDatabase)) {
-        const rawData = fs.readFileSync(scanFileDatabase);
-        return JSON.parse(rawData);
-    }
-    return [];
+    return scanFileDatabase;
 }
 
-// Save data to database.json
+// Save data to the in-memory database
 function saveReceivedDatabase(data) {
-    fs.writeFileSync(scanFileDatabase, JSON.stringify(data, null, 2));
+    scanFileDatabase.length = 0; // Clear the existing array
+    scanFileDatabase.push(...data); // Push the new data
 }
 
 let receivedDatabase = loadReceivedDatabase();
@@ -56,7 +49,6 @@ const postDatabaseData = (req, res) => {
         data: newEntry,
     });
 };
-
 
 const getDatabaseData = (req, res) => {
     console.log('Sending Database Data:', receivedDatabase);
