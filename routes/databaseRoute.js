@@ -1,22 +1,21 @@
 const express = require('express');
 const router = express.Router();
+
 const {
-    postDatabaseData,
-    getDatabaseData,
-    deleteDatabaseData,
-    getDataByRFID,
-    updateDataByRFID,
-    deleteDataByRFID,
-} = require('../controllers/databaseController');
+    postData,
+    getData,
+    deleteData,
+    getDataById, deleteDataById, updateDataById
+} = require('../controllers/dataController');
 
 // Routes
-router.post('/data', postDatabaseData);
-router.get('/data', getDatabaseData);
-router.delete('/data', deleteDatabaseData);
+router.post('/data', postData);
+router.get('/data', getData);
+router.delete('/data', deleteData);
 
 // Routes for specific RFID
-router.get('/data/:rfid', getDataByRFID);
-router.put('/data/:rfid', updateDataByRFID);
-router.delete('/data/:rfid', deleteDataByRFID);
+router.get('/data/:rfid', getDataById);
+router.put('/data/:rfid', updateDataById);
+router.delete('/data/:rfid', deleteDataById);
 
 module.exports = router;
